@@ -1,0 +1,54 @@
+
+server:
+  port: 6760
+spring:
+  application:
+    name: business-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        register-enabled: true
+        namespace: 4c3cb134-d250-4c46-8fd2-8e990ebe938b
+      config:
+        server-addr: localhost:8848
+        enabled: true
+        file-extension: yaml
+        namespace: 4c3cb134-d250-4c46-8fd2-8e990ebe938b
+
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  # 事务群组（可以每个应用独立取名，也可以使用相同的名字），要与服务端nacos-config.txt中service.vgroup_mapping的后缀对应
+  tx-service-group: my_test_tx_group
+  config:
+    type: nacos
+    # 需要和server在同一个注册中心下
+    nacos:
+      namespace: 4c3cb134-d250-4c46-8fd2-8e990ebe938b
+      serverAddr: localhost:8848
+      # 需要server端(registry和config)、nacos配置client端(registry和config)保持一致
+      group: SEATA_GROUP
+      username: "nacos"
+      password: "nacos"
+  registry:
+    type: nacos
+    nacos:
+      # 需要和server端保持一致，即server在nacos中的名称，默认为seata-server
+      application: seata-server
+      server-addr: localhost:8848
+      group: SEATA_GROUP
+      namespace: 4c3cb134-d250-4c46-8fd2-8e990ebe938b
+      username: "nacos"
+      password: "nacos"
+
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+
+# feign组件超时设置
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 30000
+        read-timeout: 30000
